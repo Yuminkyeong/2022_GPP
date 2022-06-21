@@ -57,15 +57,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Command\ReplayCommand.cs" />
-    <Compile Include="Assets\CommandManager.cs" />
+    <Compile Include="Assets\Scripts\ManagerScripts\CommandManager.cs" />
     <Compile Include="Assets\Command\CreateWallCommand.cs" />
     <Compile Include="Assets\Command\UndoCommand.cs" />
-    <Compile Include="Assets\GridManager.cs" />
-    <Compile Include="Assets\PlayerScript.cs" />
+    <Compile Include="Assets\Scripts\ManagerScripts\GridManager.cs" />
+    <Compile Include="Assets\Scripts\PlayerScript.cs" />
     <Compile Include="Assets\Command\MoveCommand.cs" />
     <Compile Include="Assets\Assets\Suriyun\Scripts\AnimatorController.cs" />
     <Compile Include="Assets\Assets\Suriyun\Scripts\Camera Scripts\MouseOrbitImproved.cs" />
     <Compile Include="Assets\Command\Wall2Command.cs" />
+    <Compile Include="Assets\Scripts\ManagerScripts\BtnManager.cs" />
+    <Compile Include="Assets\Scripts\ObjectPool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Assets\Suriyun\UnityChanShader\Shader\Unitychan_chara_fuku.shader" />
