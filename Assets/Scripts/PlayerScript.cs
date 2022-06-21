@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using System;
 
 public class PlayerScript : MonoBehaviour {
 
@@ -8,13 +10,16 @@ public class PlayerScript : MonoBehaviour {
     CommandManager.Command replayCommand = null;
     CommandManager.Command undoCommand = null;
 
-   
-	// Use this for initialization
-	void Start ()
+    public event Action myEvent;
+
+    private int isClear;
+    // Use this for initialization
+    void Start ()
     {
         gm = Camera.main.GetComponent<GridManager>() as GridManager;
         gm.BuildWorld(30, 30);
 
+        isClear = 0;
         replayCommand = new ReplayCommand();
         undoCommand = new UndoCommand();
     }
@@ -22,6 +27,7 @@ public class PlayerScript : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
+        myEvent?.Invoke();
         if (Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -44,7 +50,6 @@ public class PlayerScript : MonoBehaviour {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                //print(hit.transform.tag);
                 if (hit.transform.tag == "Plane")
                 {
                     var command = new CreateWallCommand(gm, hit.point);
@@ -52,13 +57,44 @@ public class PlayerScript : MonoBehaviour {
                 }
             }
         }
+
+        else if (Input.GetMouseButtonDown(2))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                if (hit.transform.tag == "enemy")
+                {
+                    Debug.Log("enemy");
+                    var bullet = ObjectPool.GetObject();
+                    var direction = hit.point - this.gameObject.transform.position;
+                    bullet.Shoot(direction);
+
+                    Destroy(hit.transform.gameObject);
+                }
+            }    
+      
+        }
+      
         else if (Input.GetKeyDown(KeyCode.U))
         {
             undoCommand.Execute();
         }
-        else if (Input.GetKeyDown(KeyCode.R))
+
+        else if (isClear == 1)
         {
             replayCommand.Execute();
+            isClear = 2;
         }
-    }    
+       
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Success"))
+        {
+            isClear = 1;
+        }
+    }
 }

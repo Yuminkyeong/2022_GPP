@@ -2,46 +2,63 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class ObjectInfo
-{
-    public GameObject goPrefab;
-    public int count;
-    public Transform PoolParent;
-}
+//ObjectPool MonoBehaviour 사용했을 때
 
 public class ObjectPool : MonoBehaviour
 {
-    [SerializeField] ObjectInfo[] objectInfo = null;
+    public static ObjectPool Instance;
 
-    public Queue<GameObject> noteQueue = new Queue<GameObject>();
+    [SerializeField]
+    private GameObject poolingObjectPrefab;
 
-    public static ObjectPool instance;
-    // Start is called before the first frame update
-    void Start()
+    Queue<Bullet> poolingObjectQueue = new Queue<Bullet>();
+
+    private void Awake()
     {
-        instance = this;
-        noteQueue = InsertQueue(objectInfo[0]);
+        Instance = this;
+
+        Initialize(10);
     }
 
-   Queue<GameObject> InsertQueue(ObjectInfo p_objectInfo)
+    private void Initialize(int initCount)
     {
-        Queue<GameObject> t_queue = new Queue<GameObject>();
-        for(int i = 0; i < p_objectInfo.count; i++)
+        for (int i = 0; i < initCount; i++)
         {
-            GameObject t_clone = Instantiate(p_objectInfo.goPrefab, transform.position, Quaternion.identity);
-            t_clone.SetActive(false);
-            if(p_objectInfo.PoolParent != null)
-            {
-                t_clone.transform.SetParent(p_objectInfo.PoolParent);
-            }
-            else
-            {
-                t_clone.transform.SetParent(this.transform);
-            }
-
-            t_queue.Enqueue(t_clone);
+            poolingObjectQueue.Enqueue(CreateNewObject());
         }
-        return t_queue;
     }
+
+    private Bullet CreateNewObject()
+    {
+        var newObj = Instantiate(poolingObjectPrefab).GetComponent<Bullet>();
+        newObj.gameObject.SetActive(false);
+        newObj.transform.SetParent(transform);
+        return newObj;
+    }
+
+    public static Bullet GetObject()
+    {
+        if (Instance.poolingObjectQueue.Count > 0)
+        {
+            var obj = Instance.poolingObjectQueue.Dequeue();
+            obj.transform.SetParent(null);
+            obj.gameObject.SetActive(true);
+            return obj;
+        }
+        else
+        {
+            var newObj = Instance.CreateNewObject();
+            newObj.gameObject.SetActive(true);
+            newObj.transform.SetParent(null);
+            return newObj;
+        }
+    }
+
+    public static void ReturnObject(Bullet obj)
+    {
+        obj.gameObject.SetActive(false);
+        obj.transform.SetParent(Instance.transform);
+        Instance.poolingObjectQueue.Enqueue(obj);
+    }
+  
 }

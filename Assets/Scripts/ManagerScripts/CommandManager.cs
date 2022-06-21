@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class CommandManager : MonoBehaviour
 {
@@ -58,6 +58,7 @@ public class CommandManager : MonoBehaviour
     public void Replay()
     {
         StartCoroutine(replay());
+      //  if(comm)
     }
 
     IEnumerator replay()
@@ -72,5 +73,6 @@ public class CommandManager : MonoBehaviour
             command.Execute();
             lastTs = command.Ts;
         }
+        SceneManager.LoadScene("Clear");
     }
 }
